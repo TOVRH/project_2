@@ -8,6 +8,10 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))
 
 def pytest_configure(config):
+    """
+    Definuje vlastní pytest markery pro rozlišení testů.
+    """
+
     config.addinivalue_line(
         "markers",
         "positive: označí testy jako pozitivní"
@@ -19,7 +23,12 @@ def pytest_configure(config):
 
 @pytest.fixture
 def test_db_pripojeni():
-    # Připojení k databázi
+    """
+    Vytvoří připojení k testovací databázi a připraví tabulku.
+
+    Po testu automaticky smaže data a uzavře připojení.
+    """
+
     connection = mysql.connector.connect(
         host="localhost",
         user="root",
@@ -41,7 +50,6 @@ def test_db_pripojeni():
 
     yield connection
 
-    # cleanup po testu
     with connection.cursor() as cursor:
         cursor.execute("TRUNCATE TABLE ukoly")
         connection.commit()
@@ -49,8 +57,11 @@ def test_db_pripojeni():
     connection.close()
 
 @pytest.fixture
-def setup_test_data(test_db_pripojeni):
-    # Vložíme testovací data pro testy, které je potřebují
+def priprav_test_data(test_db_pripojeni):
+    """
+    Vloží základní testovací data pro testy,
+    které potřebují existující záznamy v databázi.
+    """
     with test_db_pripojeni.cursor() as cursor:
         cursor.execute("""
             INSERT INTO ukoly (nazev, popis, stav)

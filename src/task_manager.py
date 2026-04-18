@@ -150,8 +150,10 @@ def aktualizovat_ukol(pripojeni):
     """
     Aktualizuje stav existujícího úkolu.
 
-    Uživatel vybírá ID, dokud nezadá existující úkol,
-    poté vybere nový stav.
+    Uživatel:
+    - vidí seznam úkolů,
+    - vybírá ID (dokud nezadá existující),
+    - vybírá nový stav pomocí nabídky (Probíhá / Hotovo).
     """
     if not pripojeni:
         print("Chyba: Nepodařilo se připojit k databázi.")
@@ -162,37 +164,46 @@ def aktualizovat_ukol(pripojeni):
     try:
         with cursor_manager(pripojeni) as cursor:
 
-            # 🔁 OPAKOVÁNÍ DOKUD NENÍ SPRÁVNÉ ID
+            # výběr validního ID
             while True:
-                id_ukolu = int(input("\nZadejte ID úkolu, který chcete aktualizovat: "))
+                try:
+                    id_ukolu = int(input("\nZadejte ID úkolu, který chcete aktualizovat: "))
 
-                cursor.execute("SELECT id FROM ukoly WHERE id = %s", (id_ukolu,))
-                ukol_existuje = cursor.fetchone()
+                    cursor.execute("SELECT id FROM ukoly WHERE id = %s", (id_ukolu,))
+                    if cursor.fetchone():
+                        break
+                    else:
+                        print("Zadané ID neexistuje, zkuste to znovu.")
 
-                if ukol_existuje:
+                except ValueError:
+                    print("Zadejte platné číslo.")
+
+            # 🔽 výběr nového stavu (uživatelské menu)
+            while True:
+                print("\nVyberte nový stav:")
+                print("1. Probíhá")
+                print("2. Hotovo")
+
+                volba = input("Zadejte volbu (1-2): ").strip()
+
+                if volba == "1":
+                    novy_stav = "probíhá"
+                    break
+                elif volba == "2":
+                    novy_stav = "hotovo"
                     break
                 else:
-                    print("Zadané ID neexistuje, zkuste to znovu.")
+                    print("Neplatná volba, zkuste to znovu.")
 
-            povolene_stavy = ["nezahájeno", "probíhá", "hotovo"]
-
-            while True:
-                novy_stav = input("Zadejte nový stav (nezahájeno, probíhá, hotovo): ").strip().lower()
-
-                if novy_stav in povolene_stavy:
-                    break
-                else:
-                    print("Neplatný stav, zkuste to znovu.")
-
+            # 🔄 update v DB
             cursor.execute(
                 "UPDATE ukoly SET stav = %s WHERE id = %s",
                 (novy_stav, id_ukolu)
             )
             pripojeni.commit()
-            print(f"Úkol s ID {id_ukolu} byl aktualizován.")
 
-    except ValueError:
-        print("Zadejte platné číslo.")
+            print(f"Úkol s ID {id_ukolu} byl aktualizován na stav '{novy_stav}'.")
+
     except Error as e:
         print(f"Chyba při aktualizaci úkolu: {e}")
         
