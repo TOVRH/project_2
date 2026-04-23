@@ -3,6 +3,10 @@ import mysql.connector
 from mysql.connector import Error
 import sys
 from pathlib import Path
+from dotenv import load_dotenv
+import os
+
+load_dotenv(".env.test")
 
 # Přidáme cestu k adresáři src
 sys.path.append(str(Path(__file__).parent.parent))
@@ -30,11 +34,12 @@ def test_db_pripojeni():
     """
 
     connection = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="1111",
-        database="tests_task_manager"
-    )
+        host=os.getenv("DB_HOST"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        database=os.getenv("DB_NAME")
+)
+    
 
     with connection.cursor() as cursor:
             cursor.execute("""

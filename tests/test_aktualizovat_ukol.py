@@ -14,7 +14,7 @@ def test_aktualizovat_ukol(test_db_pripojeni, priprav_test_data):
 
     # Ověříme změnu v DB
     with test_db_pripojeni.cursor() as cursor:
-        cursor.execute("SELECT stav FROM ukoly WHERE id = 1")
+        cursor.execute("SELECT stav FROM ukoly WHERE nazev = 'Úkol 1'")
         stav = cursor.fetchone()[0]
 
     assert stav == "probíhá"

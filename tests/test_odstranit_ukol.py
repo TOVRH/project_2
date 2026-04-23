@@ -14,7 +14,7 @@ def test_odstranit_ukol(test_db_pripojeni, priprav_test_data):
 
     # Ověříme, že úkol zmizel
     with test_db_pripojeni.cursor() as cursor:
-        cursor.execute("SELECT COUNT(*) FROM ukoly WHERE id = 1")
+        cursor.execute("SELECT COUNT(*) FROM ukoly WHERE nazev  = 'Úkol 1'")
         count = cursor.fetchone()[0]
 
     assert count == 0

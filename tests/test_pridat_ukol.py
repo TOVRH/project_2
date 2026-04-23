@@ -12,10 +12,10 @@ def test_pridat_ukol_novy(test_db_pripojeni):
 
     # Ověřujeme, že úkol byl přidán po zadání platného vstupu
     with test_db_pripojeni.cursor() as cursor:
-        cursor.execute("SELECT COUNT(*) FROM ukoly")
-        count = cursor.fetchone()[0]
+        cursor.execute("SELECT nazev, popis FROM ukoly WHERE nazev = 'Úkol 1'")
+        ukol = cursor.fetchone()
     
-    assert count == 1
+    assert ukol == ("Úkol 1", "Popis 1")
 
 @pytest.mark.negative
 def test_pridat_ukol_prazdny_nazev(test_db_pripojeni, capsys):
