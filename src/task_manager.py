@@ -30,11 +30,11 @@ def pripojeni_db():
     """
     try:
         pripojeni = mysql.connector.connect(
-        host=os.getenv("DB_HOST"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        database=os.getenv("DB_NAME")
-)
+            host=os.getenv("DB_HOST"),
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD"),
+            database=os.getenv("DB_NAME")
+        )
         
         print("Připojeno k databázi.")
         return pripojeni
@@ -91,6 +91,18 @@ def hlavni_menu() -> str:
 
 
 def pridat_ukol(pripojeni):
+    """
+    Přidá nový úkol do databáze.
+
+    Uživatel zadá název a popis úkolu, které nesmí být prázdné.
+    Úkol se uloží do tabulky `ukoly` a vrátí se jeho ID.
+
+    Args:
+        pripojeni: databázové připojení
+
+    Returns:
+        ID nově vytvořeného úkolu nebo None při chybě
+    """
     if not pripojeni:
         print("Chyba: Nepodařilo se připojit k databázi.")
         return None
@@ -237,7 +249,7 @@ def odstranit_ukol(pripojeni):
     try:
         with cursor_manager(pripojeni) as cursor:
 
-            # OPAKOVÁNÍ DOKUD NENÍ ZADÁNO EXISTUJÍCÍ ID
+            # opakování dokud není zadáno existující id
             while True:
                 try:
                     id_ukolu = int(input("\nZadejte ID úkolu, který chcete odstranit: "))

@@ -75,3 +75,5 @@ def priprav_test_data(test_db_pripojeni):
                 ('Úkol 2', 'Popis 2', 'probíhá')
         """)
     test_db_pripojeni.commit()
+
+    yield
